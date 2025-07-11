@@ -1,14 +1,16 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
+import { Toaster } from "react-hot-toast"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "PosterGenie.ai - AI-Powered Poster Generation & Social Media Automation",
+  title: "PosterGenie.ai - AI-Powered Event Poster Generation",
   description:
-    "Create stunning posters and schedule them with AI. Design, Schedule, Automate - all with PosterGenie.ai",
+    "Upload event calendars and automatically generate professional posters using Gemini AI. Perfect for educational institutions and organizations.",
+  keywords: "AI poster generation, event automation, Gemini AI, calendar processing",
     generator: 'v0.dev'
 }
 
@@ -19,7 +21,33 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {children}
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: "#363636",
+              color: "#fff",
+            },
+            success: {
+              duration: 3000,
+              iconTheme: {
+                primary: "#10B981",
+                secondary: "#fff",
+              },
+            },
+            error: {
+              duration: 5000,
+              iconTheme: {
+                primary: "#EF4444",
+                secondary: "#fff",
+              },
+            },
+          }}
+        />
+      </body>
     </html>
   )
 }

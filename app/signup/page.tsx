@@ -8,28 +8,58 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Sparkles } from "lucide-react"
+import { Textarea } from "@/components/ui/textarea"
+import { Sparkles, Building2, Users, Crown } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 export default function SignupPage() {
+  const [selectedPlan, setSelectedPlan] = useState("freemium")
   const [formData, setFormData] = useState({
+    organizationName: "",
+    organizationType: "",
     email: "",
     password: "",
     confirmPassword: "",
-    accountType: "",
+    contactNumber: "",
+    address: "",
+    teamSize: "",
   })
   const router = useRouter()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle signup logic here
+    // Handle organization registration
     router.push("/dashboard")
+  }
+
+  const plans = {
+    freemium: {
+      name: "Freemium",
+      price: "₹0",
+      icon: Building2,
+      color: "text-gray-600",
+      bg: "bg-gray-100",
+    },
+    pro: {
+      name: "Pro Plan",
+      price: "₹499",
+      icon: Users,
+      color: "text-purple-600",
+      bg: "bg-purple-100",
+    },
+    enterprise: {
+      name: "Enterprise",
+      price: "₹10,000",
+      icon: Crown,
+      color: "text-yellow-600",
+      bg: "bg-yellow-100",
+    },
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-2xl">
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center space-x-2">
@@ -42,63 +72,148 @@ export default function SignupPage() {
 
         <Card className="border-0 shadow-xl">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Create Your Account</CardTitle>
-            <CardDescription>Start creating amazing posters with AI</CardDescription>
+            <CardTitle className="text-2xl">Create Organization Account</CardTitle>
+            <CardDescription>Join thousands of organizations using AI for event marketing</CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Plan Selection */}
+              <div className="space-y-3">
+                <Label>Select Your Plan</Label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {Object.entries(plans).map(([key, plan]) => (
+                    <div
+                      key={key}
+                      className={`p-4 border rounded-lg cursor-pointer transition-all ${
+                        selectedPlan === key
+                          ? "border-purple-500 bg-purple-50"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                      onClick={() => setSelectedPlan(key)}
+                    >
+                      <div className="text-center">
+                        <div className={`w-8 h-8 ${plan.bg} rounded-lg flex items-center justify-center mx-auto mb-2`}>
+                          <plan.icon className={`w-5 h-5 ${plan.color}`} />
+                        </div>
+                        <p className="font-medium">{plan.name}</p>
+                        <p className="text-sm text-gray-600">{plan.price}/month</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Organization Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="org-name">Organization Name *</Label>
+                  <Input
+                    id="org-name"
+                    placeholder="Enter organization name"
+                    value={formData.organizationName}
+                    onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="org-type">Organization Type *</Label>
+                  <Select onValueChange={(value) => setFormData({ ...formData, organizationType: value })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="university">College/University</SelectItem>
+                      <SelectItem value="ngo">NGO</SelectItem>
+                      <SelectItem value="corporate">Corporate</SelectItem>
+                      <SelectItem value="event-agency">Event Management Agency</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Official Email *</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="admin@organization.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="contact">Contact Number *</Label>
+                  <Input
+                    id="contact"
+                    type="tel"
+                    placeholder="+91 98765 43210"
+                    value={formData.contactNumber}
+                    onChange={(e) => setFormData({ ...formData, contactNumber: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password *</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Create a strong password"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-password">Confirm Password *</Label>
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    placeholder="Confirm your password"
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  required
+                <Label htmlFor="address">Organization Address</Label>
+                <Textarea
+                  id="address"
+                  placeholder="Enter complete address"
+                  value={formData.address}
+                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  rows={3}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Create a password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirm-password">Confirm Password</Label>
-                <Input
-                  id="confirm-password"
-                  type="password"
-                  placeholder="Confirm your password"
-                  value={formData.confirmPassword}
-                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="account-type">Account Type</Label>
-                <Select onValueChange={(value) => setFormData({ ...formData, accountType: value })}>
+                <Label htmlFor="team-size">Expected Team Size</Label>
+                <Select onValueChange={(value) => setFormData({ ...formData, teamSize: value })}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select account type" />
+                    <SelectValue placeholder="Select team size" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="freemium">Freemium - Free</SelectItem>
-                    <SelectItem value="pro">Pro - ₹499/month</SelectItem>
-                    <SelectItem value="enterprise">Enterprise - ₹10,000/month</SelectItem>
+                    <SelectItem value="1">Just me</SelectItem>
+                    <SelectItem value="2-5">2-5 members</SelectItem>
+                    <SelectItem value="6-10">6-10 members</SelectItem>
+                    <SelectItem value="11-25">11-25 members</SelectItem>
+                    <SelectItem value="25+">25+ members</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <Button type="submit" className="w-full">
-                Create Account
+                Create Organization Account
               </Button>
             </form>
 
@@ -130,7 +245,7 @@ export default function SignupPage() {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                 />
               </svg>
-              Sign up with Google
+              Sign up with Google Workspace
             </Button>
           </CardContent>
         </Card>
@@ -139,6 +254,17 @@ export default function SignupPage() {
           Already have an account?{" "}
           <Link href="/login" className="text-purple-600 hover:underline">
             Sign in
+          </Link>
+        </p>
+
+        <p className="text-center text-xs text-gray-500 mt-4">
+          By creating an account, you agree to our{" "}
+          <Link href="/terms" className="text-purple-600 hover:underline">
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" className="text-purple-600 hover:underline">
+            Privacy Policy
           </Link>
         </p>
       </div>
