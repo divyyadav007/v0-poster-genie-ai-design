@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Sidebar,
@@ -13,7 +14,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
   SidebarInset,
-  useSidebar,
 } from "@/components/ui/sidebar"
 import {
   DropdownMenu,
@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Progress } from "@/components/ui/progress"
 import {
   LayoutDashboard,
   Wand2,
@@ -34,38 +35,55 @@ import {
   User,
   LogOut,
   Plus,
-  MessageSquare,
-  QrCode,
-  Share2,
-  Crown,
-  Upload,
   ChevronDown,
   Bell,
   Search,
+  Crown,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
+import toast from "react-hot-toast"
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-  { icon: Upload, label: "AI Generator", href: "/dashboard/ai-generator" },
+  { icon: Wand2, label: "Create Poster", href: "/dashboard/create" },
   { icon: Calendar, label: "Events", href: "/dashboard/events" },
-  { icon: Wand2, label: "Posters", href: "/dashboard/posters" },
-  { icon: Share2, label: "Social Scheduler", href: "/dashboard/calendar" },
+  { icon: Calendar, label: "Calendar", href: "/dashboard/calendar" },
   { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
-  { icon: MessageSquare, label: "WhatsApp", href: "/dashboard/whatsapp" },
-  { icon: QrCode, label: "QR Codes", href: "/dashboard/qr-codes" },
-  { icon: Users, label: "Team", href: "/dashboard/team" },
   { icon: Settings, label: "Settings", href: "/dashboard/settings" },
 ]
 
 function DashboardHeader() {
-  const { toggleSidebar } = useSidebar()
   const router = useRouter()
+  const [searchQuery, setSearchQuery] = useState("")
+
+  const handleCreateAction = (action: string) => {
+    switch (action) {
+      case "poster":
+        router.push("/dashboard/create")
+        toast.success("Opening poster creator...")
+        break
+      case "event":
+        router.push("/dashboard/events")
+        toast.success("Opening event creator...")
+        break
+      case "schedule":
+        router.push("/dashboard/calendar")
+        toast.success("Opening scheduler...")
+        break
+      default:
+        break
+    }
+  }
+
+  const handleLogout = () => {
+    toast.success("Logged out successfully")
+    router.push("/login")
+  }
 
   return (
-    <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 bg-white">
-      <SidebarTrigger className="-ml-1" />
+    <header className="flex h-16 shrink-0 items-center gap-4 border-b bg-white px-6 shadow-sm">
+      <SidebarTrigger className="-ml-1 lg:hidden" />
 
       {/* Search */}
       <div className="flex-1 max-w-md">
@@ -73,45 +91,44 @@ function DashboardHeader() {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
             type="text"
-            placeholder="Search events, posters..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            placeholder="Search posters, events..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-gray-50 transition-all"
           />
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         {/* Notifications */}
-        <Button variant="ghost" size="icon" className="relative">
+        <Button variant="ghost" size="icon" className="relative hover:bg-gray-100 rounded-xl">
           <Bell className="w-5 h-5" />
-          <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-xs"></span>
+          <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-xs flex items-center justify-center">
+            <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
+          </span>
         </Button>
 
         {/* Create Button */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button>
+            <Button className="btn-primary">
               <Plus className="w-4 h-4 mr-2" />
               Create
               <ChevronDown className="w-4 h-4 ml-2" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => router.push("/dashboard/ai-generator")}>
-              <Upload className="w-4 h-4 mr-2" />
-              Upload Calendar
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => router.push("/dashboard/posters")}>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onClick={() => handleCreateAction("poster")}>
               <Wand2 className="w-4 h-4 mr-2" />
-              Generate Poster
+              Create Poster
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => router.push("/dashboard/events")}>
+            <DropdownMenuItem onClick={() => handleCreateAction("event")}>
               <Calendar className="w-4 h-4 mr-2" />
-              Create Event
+              Add Event
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => router.push("/dashboard/qr-codes")}>
-              <QrCode className="w-4 h-4 mr-2" />
-              Generate QR Code
+            <DropdownMenuItem onClick={() => handleCreateAction("schedule")}>
+              <Calendar className="w-4 h-4 mr-2" />
+              Schedule Post
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -119,17 +136,19 @@ function DashboardHeader() {
         {/* User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-              <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-purple-600 text-white">DU</AvatarFallback>
+            <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-gray-100">
+              <Avatar className="h-10 w-10">
+                <AvatarFallback className="bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold">
+                  JD
+                </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="end" forceMount>
-            <div className="flex items-center justify-start gap-2 p-2">
+            <div className="flex items-center justify-start gap-2 p-3">
               <div className="flex flex-col space-y-1 leading-none">
-                <p className="font-medium">Delhi University</p>
-                <p className="w-[200px] truncate text-sm text-muted-foreground">admin@du.ac.in</p>
+                <p className="font-medium">John Doe</p>
+                <p className="w-[200px] truncate text-sm text-muted-foreground">john@company.com</p>
               </div>
             </div>
             <DropdownMenuSeparator />
@@ -142,7 +161,7 @@ function DashboardHeader() {
               Team Management
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => router.push("/login")}>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut className="w-4 h-4 mr-2" />
               Log out
             </DropdownMenuItem>
@@ -159,15 +178,15 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-gray-50">
-        <Sidebar className="border-r bg-white">
-          <SidebarHeader className="border-b p-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
+        <Sidebar className="border-r bg-white shadow-sm">
+          <SidebarHeader className="border-b p-6">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                <Sparkles className="w-6 h-6 text-white" />
               </div>
               <div className="flex-1">
-                <span className="text-lg font-bold gradient-text">PosterGenie.ai</span>
-                <div className="flex items-center space-x-1">
+                <span className="text-xl font-bold gradient-text">PosterGenie.ai</span>
+                <div className="flex items-center space-x-2 mt-1">
                   <Crown className="w-3 h-3 text-purple-600" />
                   <span className="text-xs text-purple-600 font-medium">Pro Plan</span>
                 </div>
@@ -175,14 +194,22 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             </div>
           </SidebarHeader>
 
-          <SidebarContent className="p-2">
+          <SidebarContent className="p-4">
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton asChild isActive={pathname === item.href}>
-                    <Link href={item.href} className="flex items-center space-x-3 px-3 py-2 rounded-lg">
+                    <Link
+                      href={item.href}
+                      className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition
+                      className={\`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 hover:bg-gray-100 ${
+                        pathname === item.href
+                          ? "bg-purple-100 text-purple-700 border border-purple-200"
+                          : "text-gray-700 hover:text-gray-900"
+                      }`}
+                    >
                       <item.icon className="w-5 h-5" />
-                      <span>{item.label}</span>
+                      <span className="font-medium">{item.label}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -191,15 +218,18 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </SidebarContent>
 
           <SidebarFooter className="border-t p-4">
-            <div className="text-xs text-gray-600 mb-2">
-              <p className="font-medium">Delhi University</p>
-              <p>Marketing Department</p>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-gray-500">Credits: 73/100</span>
-              <div className="w-16 bg-gray-200 rounded-full h-1">
-                <div className="bg-purple-600 h-1 rounded-full" style={{ width: "73%" }}></div>
+            <div className="space-y-3">
+              <div className="text-xs text-gray-600">
+                <p className="font-medium">Credits Usage</p>
+                <div className="flex items-center justify-between mt-1">
+                  <span>73 / 100 used</span>
+                  <span className="text-purple-600 font-medium">73%</span>
+                </div>
               </div>
+              <Progress value={73} className="h-2" />
+              <Button variant="outline" size="sm" className="w-full text-xs bg-transparent">
+                Upgrade Plan
+              </Button>
             </div>
           </SidebarFooter>
         </Sidebar>

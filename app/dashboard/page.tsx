@@ -1,3 +1,6 @@
+"use client"
+
+import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -5,50 +8,66 @@ import { Progress } from "@/components/ui/progress"
 import {
   ImageIcon,
   Calendar,
-  TrendingUp,
-  Users,
   Plus,
-  Activity,
-  Clock,
   Share2,
   Zap,
-  MessageSquare,
-  QrCode,
   Crown,
+  ArrowUpRight,
+  Sparkles,
+  BarChart3,
+  Download,
 } from "lucide-react"
+import Link from "next/link"
+import toast from "react-hot-toast"
 
 export default function DashboardPage() {
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleQuickAction = async (action: string) => {
+    setIsLoading(true)
+    toast.loading(`${action}...`)
+
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+
+    toast.dismiss()
+    toast.success(`${action} completed!`)
+    setIsLoading(false)
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Organization Dashboard</h1>
-          <p className="text-gray-600">Welcome back! Here's your event marketing overview.</p>
+          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-gray-600 mt-1">Welcome back! Here's your poster creation overview.</p>
         </div>
-        <div className="flex space-x-2">
-          <Button variant="outline">
-            <QrCode className="w-4 h-4 mr-2" />
-            Generate QR
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button variant="outline" className="btn-secondary bg-transparent">
+            <BarChart3 className="w-4 h-4 mr-2" />
+            View Analytics
           </Button>
-          <Button>
-            <Plus className="w-4 h-4 mr-2" />
-            Create Event Poster
-          </Button>
+          <Link href="/dashboard/create">
+            <Button className="btn-primary">
+              <Plus className="w-4 h-4 mr-2" />
+              Create New Poster
+            </Button>
+          </Link>
         </div>
       </div>
 
       {/* Plan Status */}
-      <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">
+      <Card className="neumorphic border-0 bg-gradient-to-r from-purple-50 to-blue-50">
         <CardContent className="p-6">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
                 <Crown className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold">Pro Plan Active</h3>
-                <p className="text-sm text-gray-600">Delhi University - Marketing Department</p>
+                <h3 className="text-lg font-semibold text-gray-900">Pro Plan Active</h3>
+                <p className="text-sm text-gray-600">Your Creative Company - Marketing Team</p>
               </div>
             </div>
             <div className="text-right">
@@ -58,133 +77,142 @@ export default function DashboardPage() {
           </div>
           <div className="mt-4">
             <div className="flex justify-between text-sm mb-2">
-              <span>Monthly usage</span>
-              <span>27 credits used</span>
+              <span className="text-gray-700">Monthly usage</span>
+              <span className="text-gray-700">27 credits used</span>
             </div>
-            <Progress value={27} className="h-2" />
+            <Progress value={27} className="h-3 bg-white/50" />
           </div>
         </CardContent>
       </Card>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="neumorphic border-0 card-hover">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Posters Generated</CardTitle>
-            <ImageIcon className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-gray-700">Posters Created</CardTitle>
+            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+              <ImageIcon className="h-4 w-4 text-blue-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">156</div>
-            <p className="text-xs text-muted-foreground">+23 this month</p>
+            <div className="text-2xl font-bold text-gray-900">156</div>
+            <p className="text-xs text-green-600 flex items-center mt-1">
+              <ArrowUpRight className="w-3 h-3 mr-1" />
+              +23 this month
+            </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="neumorphic border-0 card-hover">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Scheduled Events</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-gray-700">Credits Left</CardTitle>
+            <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+              <Zap className="h-4 w-4 text-purple-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12</div>
-            <p className="text-xs text-muted-foreground">Next: Tomorrow 2:00 PM</p>
+            <div className="text-2xl font-bold text-gray-900">73</div>
+            <p className="text-xs text-gray-600 mt-1">Resets in 12 days</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="neumorphic border-0 card-hover">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Social Reach</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-gray-700">Scheduled Posts</CardTitle>
+            <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+              <Calendar className="h-4 w-4 text-green-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">45.2K</div>
-            <p className="text-xs text-muted-foreground">+12.5% from last month</p>
+            <div className="text-2xl font-bold text-gray-900">12</div>
+            <p className="text-xs text-blue-600 mt-1">Next: Tomorrow 2:00 PM</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="neumorphic border-0 card-hover">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Team Members</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-gray-700">Connected Accounts</CardTitle>
+            <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+              <Share2 className="h-4 w-4 text-orange-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">8</div>
-            <p className="text-xs text-muted-foreground">3 active today</p>
+            <div className="text-2xl font-bold text-gray-900">4</div>
+            <p className="text-xs text-gray-600 mt-1">FB, IG, TW, LI</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Upcoming Events */}
-        <Card>
+        {/* Recent Activity */}
+        <Card className="neumorphic border-0">
           <CardHeader>
-            <CardTitle>Upcoming Events</CardTitle>
-            <CardDescription>Your scheduled events and poster campaigns</CardDescription>
+            <CardTitle className="text-gray-900">Recent Activity</CardTitle>
+            <CardDescription>Your latest poster creations and scheduled posts</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {[
                 {
-                  title: "Annual Tech Fest 2024",
-                  date: "Tomorrow, 2:00 PM",
-                  platform: "All Platforms",
-                  status: "Ready",
-                  type: "University Event",
+                  title: "Holiday Sale Poster",
+                  action: "Created",
+                  time: "2 hours ago",
+                  status: "completed",
+                  icon: ImageIcon,
+                  color: "bg-green-100 text-green-600",
                 },
                 {
-                  title: "Student Orientation Program",
-                  date: "Dec 18, 10:00 AM",
-                  platform: "Instagram, Facebook",
-                  status: "In Review",
-                  type: "Academic",
+                  title: "Black Friday Campaign",
+                  action: "Scheduled",
+                  time: "4 hours ago",
+                  status: "scheduled",
+                  icon: Calendar,
+                  color: "bg-blue-100 text-blue-600",
                 },
                 {
-                  title: "Research Symposium",
-                  date: "Dec 22, 3:00 PM",
-                  platform: "LinkedIn, Twitter",
-                  status: "Draft",
-                  type: "Academic",
+                  title: "Product Launch Poster",
+                  action: "Generated",
+                  time: "1 day ago",
+                  status: "completed",
+                  icon: Sparkles,
+                  color: "bg-purple-100 text-purple-600",
                 },
                 {
-                  title: "Winter Break Notice",
-                  date: "Dec 25, 9:00 AM",
-                  platform: "WhatsApp, Email",
-                  status: "Scheduled",
-                  type: "Announcement",
+                  title: "Social Media Post",
+                  action: "Shared",
+                  time: "2 days ago",
+                  status: "shared",
+                  icon: Share2,
+                  color: "bg-orange-100 text-orange-600",
                 },
-              ].map((event, index) => (
-                <div key={index} className="flex items-center space-x-4 p-4 border rounded-lg hover:bg-gray-50">
-                  <div className="w-3 h-3 bg-purple-600 rounded-full"></div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <p className="font-medium">{event.title}</p>
-                      <Badge variant="outline" className="text-xs">
-                        {event.type}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center space-x-4 text-sm text-gray-600">
-                      <div className="flex items-center">
-                        <Clock className="w-4 h-4 mr-1" />
-                        <span>{event.date}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Share2 className="w-4 h-4 mr-1" />
-                        <span>{event.platform}</span>
-                      </div>
-                    </div>
+              ].map((activity, index) => (
+                <div
+                  key={index}
+                  className="flex items-center space-x-4 p-3 rounded-xl hover:bg-gray-50 transition-colors"
+                >
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${activity.color}`}>
+                    <activity.icon className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-gray-900 truncate">{activity.title}</p>
+                    <p className="text-sm text-gray-600">
+                      {activity.action} • {activity.time}
+                    </p>
                   </div>
                   <Badge
-                    variant={
-                      event.status === "Ready"
-                        ? "default"
-                        : event.status === "Scheduled"
-                          ? "secondary"
-                          : event.status === "In Review"
-                            ? "outline"
-                            : "secondary"
-                    }
+                    variant="secondary"
+                    className={`text-xs ${
+                      activity.status === "completed"
+                        ? "bg-green-100 text-green-700"
+                        : activity.status === "scheduled"
+                          ? "bg-blue-100 text-blue-700"
+                          : activity.status === "shared"
+                            ? "bg-orange-100 text-orange-700"
+                            : "bg-gray-100 text-gray-700"
+                    }`}
                   >
-                    {event.status}
+                    {activity.status}
                   </Badge>
                 </div>
               ))}
@@ -192,165 +220,92 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* AI Generation Stats */}
-        <Card>
+        {/* Quick Actions */}
+        <Card className="neumorphic border-0">
           <CardHeader>
-            <CardTitle>AI Generation Analytics</CardTitle>
-            <CardDescription>Performance of your AI-generated content</CardDescription>
+            <CardTitle className="text-gray-900">Quick Actions</CardTitle>
+            <CardDescription>Common tasks to boost your productivity</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-6">
-              {/* AI Engine Usage */}
-              <div>
-                <h4 className="font-medium mb-3">AI Engine Usage</h4>
-                <div className="space-y-3">
-                  {[
-                    { engine: "DALL·E 3", usage: 45, color: "bg-green-500" },
-                    { engine: "Leonardo AI", usage: 30, color: "bg-blue-500" },
-                    { engine: "Runway ML", usage: 20, color: "bg-purple-500" },
-                    { engine: "GPT-4o (Captions)", usage: 85, color: "bg-orange-500" },
-                  ].map((item, index) => (
-                    <div key={index} className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium">{item.engine}</span>
-                        <span className="text-sm text-gray-600">{item.usage}%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className={`${item.color} h-2 rounded-full`} style={{ width: `${item.usage}%` }}></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            <div className="grid grid-cols-2 gap-4">
+              <Button
+                variant="outline"
+                className="h-20 flex-col space-y-2 btn-secondary bg-transparent"
+                onClick={() => handleQuickAction("Creating poster")}
+                disabled={isLoading}
+              >
+                <Sparkles className="w-6 h-6 text-purple-600" />
+                <span className="text-sm font-medium">AI Generate</span>
+              </Button>
 
-              {/* Quick Actions */}
-              <div>
-                <h4 className="font-medium mb-3">Quick Actions</h4>
-                <div className="grid grid-cols-2 gap-3">
-                  <Button variant="outline" size="sm" className="justify-start bg-transparent">
-                    <Zap className="w-4 h-4 mr-2" />
-                    Bulk Generate
-                  </Button>
-                  <Button variant="outline" size="sm" className="justify-start bg-transparent">
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    WhatsApp Share
-                  </Button>
-                  <Button variant="outline" size="sm" className="justify-start bg-transparent">
-                    <QrCode className="w-4 h-4 mr-2" />
-                    QR Codes
-                  </Button>
-                  <Button variant="outline" size="sm" className="justify-start bg-transparent">
-                    <Activity className="w-4 h-4 mr-2" />
-                    Analytics
-                  </Button>
-                </div>
-              </div>
+              <Button
+                variant="outline"
+                className="h-20 flex-col space-y-2 btn-secondary bg-transparent"
+                onClick={() => handleQuickAction("Scheduling post")}
+                disabled={isLoading}
+              >
+                <Calendar className="w-6 h-6 text-blue-600" />
+                <span className="text-sm font-medium">Schedule Post</span>
+              </Button>
+
+              <Button
+                variant="outline"
+                className="h-20 flex-col space-y-2 btn-secondary bg-transparent"
+                onClick={() => handleQuickAction("Analyzing performance")}
+                disabled={isLoading}
+              >
+                <BarChart3 className="w-6 h-6 text-green-600" />
+                <span className="text-sm font-medium">View Analytics</span>
+              </Button>
+
+              <Button
+                variant="outline"
+                className="h-20 flex-col space-y-2 btn-secondary bg-transparent"
+                onClick={() => handleQuickAction("Downloading assets")}
+                disabled={isLoading}
+              >
+                <Download className="w-6 h-6 text-orange-600" />
+                <span className="text-sm font-medium">Download All</span>
+              </Button>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Recent Activity & Team Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Latest actions across your organization</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {[
-                {
-                  action: "Generated poster",
-                  item: "Tech Fest 2024 Banner",
-                  user: "Priya Sharma",
-                  time: "2 hours ago",
-                  icon: ImageIcon,
-                },
-                {
-                  action: "Scheduled post",
-                  item: "Orientation Program",
-                  user: "Rajesh Kumar",
-                  time: "4 hours ago",
-                  icon: Calendar,
-                },
-                {
-                  action: "Shared to WhatsApp",
-                  item: "Research Symposium",
-                  user: "Anita Patel",
-                  time: "1 day ago",
-                  icon: MessageSquare,
-                },
-                {
-                  action: "Generated QR code",
-                  item: "Event Registration",
-                  user: "System",
-                  time: "2 days ago",
-                  icon: QrCode,
-                },
-              ].map((activity, index) => (
-                <div key={index} className="flex items-center space-x-4 p-3 border rounded-lg">
-                  <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                    <activity.icon className="w-4 h-4 text-purple-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium">
-                      {activity.user} {activity.action}
-                    </p>
-                    <p className="text-sm text-gray-600">{activity.item}</p>
-                  </div>
-                  <span className="text-xs text-gray-500">{activity.time}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Organization Stats */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Organization Performance</CardTitle>
-            <CardDescription>Key metrics for your event marketing</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <div className="text-2xl font-bold text-green-600">94%</div>
-                  <p className="text-sm text-gray-600">Engagement Rate</p>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-blue-600">12.4K</div>
-                  <p className="text-sm text-gray-600">Total Reach</p>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-purple-600">89</div>
-                  <p className="text-sm text-gray-600">Events This Year</p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h4 className="font-medium">Platform Performance</h4>
-                {[
-                  { platform: "Instagram", reach: "18.2K", engagement: "12.4%" },
-                  { platform: "Facebook", reach: "15.8K", engagement: "8.9%" },
-                  { platform: "LinkedIn", reach: "8.4K", engagement: "15.2%" },
-                  { platform: "WhatsApp", reach: "2.8K", engagement: "45.6%" },
-                ].map((item, index) => (
-                  <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                    <span className="font-medium">{item.platform}</span>
-                    <div className="text-right">
-                      <p className="text-sm font-medium">{item.reach} reach</p>
-                      <p className="text-xs text-gray-600">{item.engagement} engagement</p>
-                    </div>
-                  </div>
-                ))}
+      {/* Performance Overview */}
+      <Card className="neumorphic border-0">
+        <CardHeader>
+          <CardTitle className="text-gray-900">Performance Overview</CardTitle>
+          <CardDescription>Your content performance across platforms</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-blue-600 mb-2">94%</div>
+              <p className="text-sm text-gray-600">Engagement Rate</p>
+              <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                <div className="bg-blue-600 h-2 rounded-full" style={{ width: "94%" }}></div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+
+            <div className="text-center">
+              <div className="text-3xl font-bold text-green-600 mb-2">12.4K</div>
+              <p className="text-sm text-gray-600">Total Reach</p>
+              <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                <div className="bg-green-600 h-2 rounded-full" style={{ width: "78%" }}></div>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <div className="text-3xl font-bold text-purple-600 mb-2">89</div>
+              <p className="text-sm text-gray-600">Posts This Month</p>
+              <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                <div className="bg-purple-600 h-2 rounded-full" style={{ width: "89%" }}></div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
